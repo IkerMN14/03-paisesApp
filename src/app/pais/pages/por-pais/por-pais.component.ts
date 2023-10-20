@@ -9,27 +9,50 @@ import { Country } from '../../interfaces/pais.interfaces';
 })
 export class PorPaisComponent {
   termino: string = '';
-  hayError : boolean = false;
-  paises : Country [] = [];
+  hayError: boolean = false;
+  paises: Country[] = [];
+
+  paisesSugeridos: Country[] = [];
+  mostarSugerencias:boolean=false;
+
+
   constructor(private paisservice: PaisService) { }
-  buscar(termino : string ) {
-    this.termino=termino;
-    this.hayError=false;
+
+  sugerencias(termino: string) {
+    this.termino = termino;
+    this.hayError = false;
+    this.mostarSugerencias=true;
     this.paisservice.buscarPais(this.termino)
       .subscribe({
         next: (paises) => {
-          this.paises= paises;
+          this.paisesSugeridos = paises.splice(0,5);
+        }
+        ,
+        error: (e) => {
+          this.paisesSugeridos=[];
+        }
+      }
+      );
+  }
+
+  buscar(termino: string) {
+    this.termino = termino;
+    this.hayError = false;
+    this.mostarSugerencias=false;
+    this.paisservice.buscarPais(this.termino)
+      .subscribe({
+        next: (paises) => {
+          this.paises = paises;
           console.log(paises);
           console.log(paises[0].capital);
         }
         ,
         error: (e) => {
           console.log(e);
-          this.hayError=true;
+          this.hayError = true;
         }
       }
       );
-
-    //console.log(this.termino);
   }
+  
 }
